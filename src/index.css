@@ -10,3 +10,8 @@ html {
   font-family: "Be Vietnam Pro"; 
   color: #E2E4F3;
 }
+
+body,#root {
+  height: 100%;
+
+}
