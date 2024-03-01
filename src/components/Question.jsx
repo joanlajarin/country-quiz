@@ -6,8 +6,8 @@ export default function Question({questionData, onClickTried, onClickHandleSetSe
 
     const [questionAnswered, setQuestionAnswered] = useState(false)
 
-    const handleClickAnswer = () => {
-        onClickTried(questionData.id) 
+    const handleClickAnswer = (correct = false) => {
+        onClickTried(questionData.id,correct) 
     }
 
     const handleSetSelect = (key) => {

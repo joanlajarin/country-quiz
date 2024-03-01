@@ -3,7 +3,7 @@ import checkRound from '../images/Check_round_fill.svg'
 import closeRound from '../images/Close_round_fill.svg'
 import { useEffect } from "react"
 
-export default function Answer({answer, answerCorrect, questionAnswered, stopClick, selectedElement, onSetSelect }) {
+export default function Answer({answer, answerCorrect, questionAnswered, stopClick, selectedElement, onSetSelect}) {
     
     const [selected, setSelected] = useState(false)
     const [correct,setCorrect] = useState("")
@@ -16,7 +16,7 @@ export default function Answer({answer, answerCorrect, questionAnswered, stopCli
             setStopSelection(true)
             setSelected(true) 
             onSetSelect() 
-            stopClick()
+            stopClick(correct)
          }
      }
 
@@ -25,6 +25,7 @@ export default function Answer({answer, answerCorrect, questionAnswered, stopCli
           if (correct) {
             setShowCorrect(true)
           }
+
       },[questionAnswered])
 
       useEffect(() => {
@@ -39,6 +40,7 @@ export default function Answer({answer, answerCorrect, questionAnswered, stopCli
         setCorrect(answerCorrect === answer )
      },[answer])
 
+     
 
      
     return (

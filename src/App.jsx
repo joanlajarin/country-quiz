@@ -123,16 +123,25 @@ function App() {
     console.log(contFinish)
   },[contFinish])
 
-  const handleTried = (index) => {
-   
+  useEffect(() => {
+    console.log("contCorrect")
+    console.log(contCorrect)
+  },[contCorrect])
+  const handleTried = (index, correct) => {
+
     setQuestionsData(prevQuestionsData => {
       const updatedQuestionsData = [...prevQuestionsData]
       updatedQuestionsData[index] = {
           ...updatedQuestionsData[index],
-          tried: true
+          tried: true,
+          correct: correct
       }
       return updatedQuestionsData    
    })
+   setContFinish(contFinish + 1)
+   if(correct) {
+      setContCorrect(contCorrect + 1)
+    }
   }
 
   const handleSetSelect = (questionId, answerId) => {
