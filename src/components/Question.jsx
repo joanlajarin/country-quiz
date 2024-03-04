@@ -2,7 +2,6 @@ import { useState, useEffect } from "react"
 import Answer from "./Answer"
 
 export default function Question({questionData, onClickTried, onClickHandleSetSelect}) {
-    console.log(questionData)
 
     const [questionAnswered, setQuestionAnswered] = useState(false)
 

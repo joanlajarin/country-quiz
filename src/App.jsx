@@ -18,14 +18,17 @@ function App() {
   const [contCorrect, setContCorrect] = useState(0)
   const [position, setPosition] = useState(0)
 
-
   const [questionsData, setQuestionsData ] = useState([{
     "id": "",
     "question": "",
     "correctAnswer": "",
     "answers": ""
     }
-  ])
+  ])    
+  
+  const [countLoadQuestions, setCountLoadQuestions] = useState(0)
+  const [loadQuestions, setLoadQuestions] = useState(false)
+
 
   const questions = [
     'Which country is ${randomCountry.capital} the capital ?',
@@ -61,29 +64,38 @@ function App() {
         for(let j = 0; j < 4;j++) {
             arrayAnswers.push({
             "id" : `${i}-${j}`,
-            "answer" : option.replace("name.common", data[randomNumbersArray[j]].name.common)
-                             .replace("capital", data[randomNumbersArray[j]].capital),
+            "answer" : option.replace("name.common", data[randomNumbersArray[j]]?.name.common)
+                             .replace("capital", data[randomNumbersArray[j]]?.capital),
             "selected" : false
           })
         }
         arrayData.push({
           "id": i,
-          "question": questions[i].replace('${randomCountry.capital}', data[randomNumbersArray[0]].capital)
-                                  .replace('${randomCountry.flags.png}', data[randomNumbersArray[0]].flags.png)
-                                  .replace('${randomCountry.name.common}', data[randomNumbersArray[0]].name.common),
-          "correctAnswer": option.replace("name.common", data[randomNumbersArray[0]].name.common)
-                                  .replace("capital", data[randomNumbersArray[0]].capital),
+          "question": questions[i].replace('${randomCountry.capital}', data[randomNumbersArray[0]]?.capital)
+                                  .replace('${randomCountry.flags.png}', data[randomNumbersArray[0]]?.flags.png)
+                                  .replace('${randomCountry.name.common}', data[randomNumbersArray[0]]?.name.common),
+          "correctAnswer": option.replace("name.common", data[randomNumbersArray[0]]?.name.common)
+                                  .replace("capital", data[randomNumbersArray[0]]?.capital),
           "answers": shuffleArray(arrayAnswers),
           "tried": false,
           "correct":false
         })
       }
       setQuestionsData(arrayData)
+      setCountLoadQuestions(prevCount => prevCount + 1)
     })
     .catch(error => {
       console.log(error)
     })
   }
+
+  useEffect(() => {
+
+    if(countLoadQuestions > 1) {
+      setLoadQuestions(true)
+    }
+  },[countLoadQuestions])
+
   useEffect(() => {
     fetchApi()
   },[])
@@ -129,6 +141,8 @@ function App() {
 }
 
   const handlePlayAgain = () => {
+      
+      setLoadQuestions(false)
       setPosition(0)
       setContFinish(0)
       setContCorrect(0) 
@@ -166,7 +180,7 @@ function App() {
         <h2 className='mt-[12px] text-[24px]'>Congrats! You completed the quiz.</h2>
         <h3 className='mt-[16px] text-[16px]'>You answer {contCorrect}/10 correctly</h3>
         <button 
-          className='mt-[48px] mb-[62px] bg-gradient-to-r from-[#E65895] to-[#BC6BE8] rounded-xl py-[17px] px-[65px] font-semibold'
+          className={`mt-[48px] mb-[62px] rounded-xl py-[17px] px-[65px] font-semibold ${ loadQuestions ? ' bg-gradient-to-r from-[#E65895] to-[#BC6BE8]' : 'bg-[#808080]'}`}
           onClick={handlePlayAgain}
           >
           Play again
