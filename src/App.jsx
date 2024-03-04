@@ -16,6 +16,7 @@ function App() {
 
   const [contFinish, setContFinish] = useState(0)
   const [contCorrect, setContCorrect] = useState(0)
+  const [position, setPosition] = useState(0)
 
 
   const [questionsData, setQuestionsData ] = useState([{
@@ -26,107 +27,71 @@ function App() {
     }
   ])
 
-  const [position, setPosition] = useState(0)
   const questions = [
     'Which country is ${randomCountry.capital} the capital ?',
     'Which country does this flag ${randomCountry.flags.png} belong to?',
     'Which capital is ${randomCountry.name.common} the country ?',
-    'Which regions is ${randomCountry.name.common} the country?',
-    'Which currency is ${randomCountry.name.common} the country?',
+    'Which country is ${randomCountry.capital} the capital ?',
+    'Which capital is ${randomCountry.name.common} the country ?',
     'Which country is ${randomCountry.capital} the capital ?',
     'Which country does this flag ${randomCountry.flags.png} belong to?',
     'Which capital is ${randomCountry.name.common} the country ?',
-    'Which regions is ${randomCountry.name.common} the country?',
-    'Which currency is ${randomCountry.name.common} the country?',
+    'Which capital is ${randomCountry.name.common} the country ?',
+    'Which country does this flag ${randomCountry.flags.png} belong to?',
   ]
 
-  useEffect(() => {
-    //fetch data api
+
+  const fetchApi = () => {
+ //fetch data api
     fetch('https://restcountries.com/v3.1/all')
     .then(response => response.json())
     .then(data => {
-      console.log(data)
       let arrayData = []
-      let randomCountry = ""
-      let randomNumber = ""
-      let randomNumber1 = ""
-      let randomNumber2 = ""
-      let randomNumber3 = ""
-
       for(let i = 0; i < 10; i++){
-        randomNumber = Math.floor(Math.random() * 251)
-        randomCountry = data[randomNumber]
-        console.log(randomCountry)
         let arrayAnswers = []
-        console.log(randomCountry)
-       
-        // if(questions[i].includes("randomCountry.capital")) {
+        let option = questions[i].includes("randomCountry.name.common") ? "capital" : "name.common" 
+        const numbers = new Set()
 
-        // }
-        arrayAnswers.push({
-          "id" : `${i}-0`,
-          "answer" : randomCountry.name.common,
-          "selected" : false
-        })
-          do {
-            randomNumber1 = Math.floor(Math.random() * 251)
-          } while(randomNumber1 === randomCountry) 
-          arrayAnswers.push({
-            "id" : `${i}-1`,
-            "answer" : data[randomNumber1].name.common,
+        while (numbers.size < 4) {
+            const randomNumber = Math.floor(Math.random() * 251)
+            numbers.add(randomNumber)
+        }
+        const randomNumbersArray = Array.from(numbers);
+      
+        for(let j = 0; j < 4;j++) {
+            arrayAnswers.push({
+            "id" : `${i}-${j}`,
+            "answer" : option.replace("name.common", data[randomNumbersArray[j]].name.common)
+                             .replace("capital", data[randomNumbersArray[j]].capital),
             "selected" : false
           })
-
-          do {
-            randomNumber2 = Math.floor(Math.random() * 251)
-          } while(randomNumber2 === randomCountry || randomNumber2 === randomNumber1) 
-          arrayAnswers.push({
-            "id" : `${i}-2`,
-            "answer" : data[randomNumber2].name.common,
-            "selected" : false
-          })
-
-          do {
-            randomNumber3 = Math.floor(Math.random() * 251)
-          } while(randomNumber3 === randomCountry || randomNumber3 === randomNumber1 ||randomNumber3 === randomNumber2 ) 
-          arrayAnswers.push({
-            "id" : `${i}-3`,
-            "answer" : data[randomNumber3].name.common,
-            "selected" : false
-          })
-    
+        }
         arrayData.push({
           "id": i,
-          "question": questions[i].replace('${randomCountry.capital}', randomCountry.capital)
-                                  .replace('${randomCountry.flags.png}', randomCountry.flags.png)
-                                  .replace('${randomCountry.name.common}', randomCountry.name.common),
-          "correctAnswer": randomCountry.name.common,
+          "question": questions[i].replace('${randomCountry.capital}', data[randomNumbersArray[0]].capital)
+                                  .replace('${randomCountry.flags.png}', data[randomNumbersArray[0]].flags.png)
+                                  .replace('${randomCountry.name.common}', data[randomNumbersArray[0]].name.common),
+          "correctAnswer": option.replace("name.common", data[randomNumbersArray[0]].name.common)
+                                  .replace("capital", data[randomNumbersArray[0]].capital),
           "answers": shuffleArray(arrayAnswers),
           "tried": false,
           "correct":false
         })
-        console.log(arrayData)
       }
       setQuestionsData(arrayData)
     })
     .catch(error => {
       console.log(error)
     })
+  }
+  useEffect(() => {
+    fetchApi()
   },[])
 
   const handleClickPosition = (position) => {
     setPosition(position)
   }
   
-  useEffect(() => {
-    console.log("contFinish")
-    console.log(contFinish)
-  },[contFinish])
-
-  useEffect(() => {
-    console.log("contCorrect")
-    console.log(contCorrect)
-  },[contCorrect])
   const handleTried = (index, correct) => {
 
     setQuestionsData(prevQuestionsData => {
@@ -139,6 +104,7 @@ function App() {
       return updatedQuestionsData    
    })
    setContFinish(contFinish + 1)
+
    if(correct) {
       setContCorrect(contCorrect + 1)
     }
@@ -147,7 +113,6 @@ function App() {
   const handleSetSelect = (questionId, answerId) => {
     // Create a copy of the questionsData array
     const updatedQuestionsData = [...questionsData];
-
     // Find the question object in the array by its id
     const questionIndex = updatedQuestionsData.findIndex(question => question.id === questionId);
     if (questionIndex !== -1) {
@@ -161,7 +126,19 @@ function App() {
             setQuestionsData(updatedQuestionsData);
         }
     }
-};
+}
+
+  const handlePlayAgain = () => {
+      setPosition(0)
+      setContFinish(0)
+      setContCorrect(0) 
+  }
+
+  useEffect(() => {
+    if(contFinish > 9) {
+      fetchApi()
+    } 
+  },[contFinish])
 
   return (
     <div className='h-full w-full flex flex-col justify-center items-center '>
@@ -188,7 +165,10 @@ function App() {
         <img src={congrats} className='w-full'></img>
         <h2 className='mt-[12px] text-[24px]'>Congrats! You completed the quiz.</h2>
         <h3 className='mt-[16px] text-[16px]'>You answer {contCorrect}/10 correctly</h3>
-        <button className='mt-[48px] mb-[62px] bg-gradient-to-r from-[#E65895] to-[#BC6BE8] rounded-xl py-[17px] px-[65px] font-semibold'>
+        <button 
+          className='mt-[48px] mb-[62px] bg-gradient-to-r from-[#E65895] to-[#BC6BE8] rounded-xl py-[17px] px-[65px] font-semibold'
+          onClick={handlePlayAgain}
+          >
           Play again
         </button>
       </section>

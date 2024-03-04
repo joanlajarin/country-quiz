@@ -35,13 +35,9 @@ export default function Answer({answer, answerCorrect, questionAnswered, stopCli
      useEffect(() => {
         if(selectedElement) {
             setSelected(true)
-            setShowCorrect(true)
         }
         setCorrect(answerCorrect === answer )
      },[answer])
-
-     
-
      
     return (
         <button 
@@ -51,6 +47,7 @@ export default function Answer({answer, answerCorrect, questionAnswered, stopCli
             <span className='text-[16px] font-semibold w-[150px]'>{answer}</span>
             <div className="relative flex w-[16px] h-[16px]">
                 <img 
+                    id={`img-${answer.id}`}
                     src={correct ? checkRound : closeRound}
                     className={`size-[16px] absolute ${showCorrect ? 'block' : 'hidden'}`}
                 ></img>

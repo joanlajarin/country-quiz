@@ -20,7 +20,17 @@ export default function Question({questionData, onClickTried, onClickHandleSetSe
     
     return (
         <div>
-            <h1 className='text-[20px] mb-[40px]'>{questionData.question}</h1>
+            <h1 className='text-[20px] mb-[40px] flex gap-[5px] items-center'>
+            {
+                questionData.question.split(/(https?:\/\/\S+\.png)/).map((part, index) => {
+                if (part.match(/(https?:\/\/\S+\.png)/)) {
+                    return <img className="w-[30px] h-[20px] rounded" key={index} src={part} alt="Flag" />
+                } else {
+                    return <span key={index}>{part}</span>
+                }
+                })
+            }
+            </h1>
             <div className='grid grid-cols-2 gap-[24px] w-[500px]'> 
                 {
                     questionData.answers && (
